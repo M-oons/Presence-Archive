@@ -1,0 +1,153 @@
+﻿<Window x:Class="Presence.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Presence" xmlns:shell="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
+        mc:Ignorable="d"
+        Title="Presence"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Width="600"
+        Height="600"
+        Background="#1B1B1B">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="50" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
+    </WindowChrome.WindowChrome>
+
+    <Grid Margin="2,2,2,2">
+        <!-- Background -->
+        <Rectangle Fill="White"/>
+        <Rectangle Margin="2,2,2,2" Fill="#7289DA" MouseLeftButtonUp="Rectangle_MouseLeftButtonUp"/>
+        
+        <!-- Close button -->
+        <Button WindowChrome.IsHitTestVisibleInChrome="True"
+            Content="⨉"
+            Foreground="White"
+            Click="CloseButton_Click"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Width="50"
+            Height="50"
+            FontSize="20"
+            Background="Transparent"
+            BorderThickness="0"
+            Focusable="False" Margin="0,2,2,0"/>
+        
+        <!-- Minimize button -->
+        <Button WindowChrome.IsHitTestVisibleInChrome="True"
+            Content="─"
+            Foreground="White"
+            Click="MinimizeButton_Click"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Width="50"
+            Height="50"
+            FontSize="20"
+            Background="Transparent"
+            BorderThickness="0"
+            Focusable="False"
+            Margin="0,2,52,0" />
+
+        <!-- Settings button -->
+        <Button WindowChrome.IsHitTestVisibleInChrome="True"
+            Content="☼"
+            Foreground="White"
+            Click="SettingsButton_Click"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Width="50"
+            Height="50"
+            FontSize="20"
+            Background="Transparent"
+            BorderThickness="0"
+            Focusable="False"
+            Margin="0,2,102,0" />
+
+        <!-- Help button --> 
+        <Button WindowChrome.IsHitTestVisibleInChrome="True"
+            Content="?"
+            Foreground="White"
+            Click="HelpButton_Click"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Width="50"
+            Height="50"
+            FontSize="20"
+            Background="Transparent"
+            BorderThickness="0"
+            Focusable="False"
+            Margin="0,2,152,0" />
+
+        <!-- Client ID -->
+        <Rectangle Margin="50,63,50,493" Fill="#1B1B1B"></Rectangle>
+        <Label Name="ClientID_Placeholder" Margin="52,65,52,495" Content="Application Client ID" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" FontStyle="Italic" Foreground="Gray" BorderThickness="0" Background="White"></Label>
+        <TextBox Name="ClientID" Margin="52,65,52,495" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="18" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Background="Transparent" TextChanged="ClientID_TextChanged"></TextBox>
+
+        <!-- Details -->
+        <Rectangle Margin="50,123,50,433" Fill="#1B1B1B"></Rectangle>
+        <Label Name="Details_Placeholder" Margin="52,125,52,435" Content="Details" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" FontStyle="Italic" Foreground="Gray" BorderThickness="0" Background="White"/>
+        <TextBox Name="Details" Margin="52,125,52,435" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="64" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Background="Transparent" TextChanged="Details_TextChanged"/>
+
+        <!-- State -->
+        <Rectangle Margin="50,183,50,373" Fill="#1B1B1B"></Rectangle>
+        <Label Name="State_Placeholder" Margin="52,185,52,375" Content="State" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" FontStyle="Italic" Foreground="Gray" BorderThickness="0" Background="White"/>
+        <TextBox Name="State" Margin="52,185,52,375" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="64" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Background="Transparent" TextChanged="State_TextChanged"/>
+
+        <!-- Large Image -->
+        <Rectangle Margin="50,243,306,313" Fill="#1B1B1B"></Rectangle>
+        <Label Name="LargeImage_Placeholder" Margin="52,245,308,315" Content="Large Image" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" FontStyle="Italic" Foreground="Gray" BorderThickness="0" Background="White"/>
+        <TextBox Name="LargeImageKey" Margin="52,245,308,315" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="16" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Background="Transparent" TextChanged="LargeImage_TextChanged"/>
+
+        <!-- Small Image -->
+        <Rectangle Margin="306,243,50,313" Fill="#1B1B1B"></Rectangle>
+        <Label Name="SmallImage_Placeholder" Margin="308,245,52,315" Content="Small Image" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" FontStyle="Italic" Foreground="Gray" BorderThickness="0" Background="White"/>
+        <TextBox Name="SmallImageKey" Margin="308,245,52,315" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="16" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Background="Transparent" TextChanged="SmallImage_TextChanged"/>
+
+        <!-- Large Image Text -->
+        <Rectangle Margin="50,303,50,253" Fill="#1B1B1B"></Rectangle>
+        <Label Name="LargeImageText_Placeholder" Margin="52,305,52,255" Content="Large Image Text" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" FontStyle="Italic" Foreground="Gray" BorderThickness="0" Background="White"/>
+        <TextBox Name="LargeImageText" Margin="52,305,52,255" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="64" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Background="Transparent" TextChanged="LargeImageText_TextChanged"/>
+
+        <!-- Small Image Text -->
+        <Rectangle Margin="50,363,50,193" Fill="#1B1B1B"></Rectangle>
+        <Label Name="SmallImageText_Placeholder" Margin="52,365,52,195" Content="Small Image Text" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" FontStyle="Italic" Foreground="Gray" BorderThickness="0" Background="White"/>
+        <TextBox Name="SmallImageText" Margin="52,365,52,195" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="64" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Background="Transparent" TextChanged="SmallImageText_TextChanged"/>
+
+        <!-- Show timestamp -->
+        <Rectangle Margin="214,418,354,151" Fill="#1B1B1B"></Rectangle>
+        <Label Name="ShowTimestampLabel" Margin="249,410,120,146" Content="Show Timestamp" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontSize="14" FontWeight="Bold" Foreground="White"/>
+        <CheckBox Name="ShowTimestampCheckbox" Margin="221,425,361,158" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5" BorderThickness="0" Focusable="False" Height="13" Background="White">
+            <CheckBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="2" ScaleY="2.1"/>
+                </TransformGroup>
+            </CheckBox.RenderTransform>
+        </CheckBox>
+
+        <!-- Reset timestamp -->
+        <Rectangle Margin="214,463,354,106" Fill="#1B1B1B"></Rectangle>
+        <Label Name="ResetTimestampLabel" Margin="249,455,120,101" Content="Reset Timestamp Next Update" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontSize="14" FontWeight="Bold" Foreground="White"/>
+        <CheckBox Name="ResetTimestampCheckbox" Margin="221,470,361,113" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5" BorderThickness="0" Focusable="False" Height="13" Background="White">
+            <CheckBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="2" ScaleY="2.1"/>
+                </TransformGroup>
+            </CheckBox.RenderTransform>
+        </CheckBox>
+
+        <!-- Start presence button -->
+        <Rectangle Name="StartPresence_Rectangle" Margin="50,505,50,31" Fill="#1B1B1B" Visibility="Visible"></Rectangle>
+        <Button Name="StartPresence_Button" Content="Start Presence" Margin="52,507,52,33" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="StartPresenceButton_Click" Visibility="Visible" IsEnabled="True"></Button>
+
+        <!-- Update presence button -->
+        <Rectangle Name="UpdatePresence_Rectangle" Margin="50,505,306,31" Fill="#1B1B1B" Visibility="Hidden"></Rectangle>
+        <Button Name="UpdatePresence_Button" Content="Update Presence" Margin="52,507,308,33" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="UpdatePresenceButton_Click" Visibility="Hidden" IsEnabled="False"></Button>
+
+        <!-- Stop presence button -->
+        <Rectangle Name="StopPresence_Rectangle" Margin="306,505,50,31" Fill="#1B1B1B" Visibility="Hidden"></Rectangle>
+        <Button Name="StopPresence_Button" Content="Stop Presence" Margin="308,507,52,33" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="StopPresenceButton_Click" Visibility="Hidden" IsEnabled="False"></Button>
+    </Grid>
+</Window>
