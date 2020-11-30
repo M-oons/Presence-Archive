@@ -52,7 +52,7 @@ namespace Presence
 
         private void HelpButton_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(Constants.DISCORD_DEVELOPER_URL);
+            Process.Start(Constants.GITHUB_URL);
         }
 
         private void Rectangle_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)

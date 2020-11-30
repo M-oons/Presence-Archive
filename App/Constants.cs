@@ -3,6 +3,6 @@
     public static class Constants
     {
         public const string APP_NAME = "Presence";
-        public const string DISCORD_DEVELOPER_URL = "https://discord.com/developers/applications";
+        public const string GITHUB_URL = "https://github.com/M-oons/Presence";
     }
 }

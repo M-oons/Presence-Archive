@@ -40,7 +40,7 @@ namespace Presence
         {
             base.OnStartup(e);
 
-            Tray = new System.Windows.Forms.NotifyIcon
+            Tray = new NotifyIcon
             {
                 Text = Constants.APP_NAME,
                 Icon = Presence.Properties.Resources.WumpusOffIcon,
@@ -61,7 +61,7 @@ namespace Presence
 
         private void CreateTrayMenu()
         {
-            Tray.ContextMenu = new System.Windows.Forms.ContextMenu();
+            Tray.ContextMenu = new ContextMenu();
 
             var title = Tray.ContextMenu.MenuItems.Add(Constants.APP_NAME);
             title.Enabled = false;
