@@ -11,4 +11,4 @@ To start, create an application on the [Discord developer page](https://discord.
 - `Show Timestamp` determines whether or not the timestamp should be displayed in your Discord activity. The timer initially starts when Presence is launched and can be reset, see below.
 - `Reset Timestamp On Update` is used to reset the timestamp to start from the current time when you click `Update Presence`.
 
-Presence will minimize to the Windows system tray when the "X" button in the top right of the window is clicked and will be shown again when the tray icon is clicked.
+Presence will initially start minimized to the Windows system tray and will be shown again when the tray icon is clicked. It will be minimized again to the tray when the "X" button in the top right of the window is clicked.
