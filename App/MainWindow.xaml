@@ -129,7 +129,7 @@
 
         <!-- Reset timestamp -->
         <Rectangle Margin="214,463,354,106" Fill="#1B1B1B"></Rectangle>
-        <Label Name="ResetTimestampLabel" Margin="249,455,120,101" Content="Reset Timestamp Next Update" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontSize="14" FontWeight="Bold" Foreground="White"/>
+        <Label Name="ResetTimestampLabel" Margin="249,455,120,101" Content="Reset Timestamp On Update" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontSize="14" FontWeight="Bold" Foreground="White"/>
         <CheckBox Name="ResetTimestampCheckbox" Margin="221,470,361,113" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5" BorderThickness="0" Focusable="False" Height="13" Background="White">
             <CheckBox.RenderTransform>
                 <TransformGroup>

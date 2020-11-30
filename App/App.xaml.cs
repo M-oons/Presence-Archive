@@ -5,14 +5,17 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Forms;
 using Presence.Utils;
+
+using Application = System.Windows.Application;
 
 namespace Presence
 {
     public partial class App : Application
     {
         public Discord Discord { get; private set; }
-        public System.Windows.Forms.NotifyIcon Tray { get; private set; }
+        public NotifyIcon Tray { get; private set; }
 
         private bool _quitting;
 
@@ -43,7 +46,7 @@ namespace Presence
                 Icon = Presence.Properties.Resources.WumpusOffIcon,
                 Visible = true
             };
-            Tray.Click += Tray_Click;
+            Tray.MouseClick += Tray_Click;
 
             MainWindow = new MainWindow();
             MainWindow.Closing += MainWindow_Closing;
@@ -60,10 +63,14 @@ namespace Presence
         {
             Tray.ContextMenu = new System.Windows.Forms.ContextMenu();
 
-            var folder = Tray.ContextMenu.MenuItems.Add("Open Folder");
-            folder.Click += TrayFolder_Click;
+            var title = Tray.ContextMenu.MenuItems.Add(Constants.APP_NAME);
+            title.Enabled = false;
+            title.DefaultItem = true;
 
             Tray.ContextMenu.MenuItems.Add("-"); // Separator
+
+            var folder = Tray.ContextMenu.MenuItems.Add("Open Folder");
+            folder.Click += TrayFolder_Click;
 
             var quit = Tray.ContextMenu.MenuItems.Add("Quit");
             quit.Click += TrayQuit_Click;
@@ -120,9 +127,12 @@ namespace Presence
             }
         }
 
-        private void Tray_Click(object sender, EventArgs e)
+        private void Tray_Click(object sender, MouseEventArgs e)
         {
-            ShowMainWindow();
+            if (e.Button == MouseButtons.Left)
+            {
+                ShowMainWindow();
+            }
         }
 
         private void TrayFolder_Click(object sender, EventArgs e)
