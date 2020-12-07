@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using Microsoft.Win32;
@@ -13,7 +16,7 @@ namespace Presence.Utils
         {
             get
             {
-                return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + $"\\{Constants.APP_NAME}\\";
+                return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + $"\\{AppInfo.NAME}\\";
             }
         }
 
@@ -40,6 +43,58 @@ namespace Presence.Utils
             return (MainWindow)Application.Current.MainWindow;
         }
 
+        public static void StartProcess(string name)
+        {
+            Process.Start(name);
+        }
+
+        public static Process[] GetProcesses(string name)
+        {
+            return Process.GetProcessesByName(name);
+        }
+
+        public static Process GetDiscordProcess()
+        {
+            Process[] processes = GetProcesses("Discord");
+            if (processes.Length == 0) return null;
+            return processes.FirstOrDefault(f => !string.IsNullOrEmpty(f.MainWindowTitle)); // main Discord process
+        }
+
+        public static async Task WaitForProcess(string name, float interval)
+        {
+            while (true)
+            {
+                Process[] processes = GetProcesses(name);
+                if (processes.Length > 0)
+                {
+                    break;
+                }
+                await Task.Delay((int)(interval * 1000));
+            }
+        }
+
+        public static void Popup(string title, string message, Action yesAction = null, Action noAction = null)
+        {
+            MessageBoxResult result = MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Information);
+            if (result == MessageBoxResult.Yes)
+            {
+                yesAction?.Invoke();
+            }
+            else if (result == MessageBoxResult.No)
+            {
+                noAction?.Invoke();
+            }
+        }
+
+        public static void Alert(string title, string message, Action okAction = null)
+        {
+            MessageBoxResult result = MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            if (result == MessageBoxResult.OK)
+            {
+                okAction?.Invoke();
+            }
+        }
+
         public static bool AddToStartup()
         {
             try
@@ -47,7 +102,7 @@ namespace Presence.Utils
                 RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
                 if (key != null)
                 {
-                    key.SetValue(Constants.APP_NAME, Assembly.GetExecutingAssembly().Location);
+                    key.SetValue(AppInfo.NAME, Assembly.GetExecutingAssembly().Location);
                     return true;
                 }
             }
@@ -64,7 +119,7 @@ namespace Presence.Utils
                 RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
                 if (key != null)
                 {
-                    key.DeleteValue(Constants.APP_NAME);
+                    key.DeleteValue(AppInfo.NAME);
                     return true;
                 }
             }
@@ -81,7 +136,7 @@ namespace Presence.Utils
                 RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
                 if (key != null)
                 {
-                    string path = key.GetValue(Constants.APP_NAME)?.ToString();
+                    string path = key.GetValue(AppInfo.NAME)?.ToString();
                     return path != null && path.ToLower() == Assembly.GetExecutingAssembly().Location.ToLower();
                 }
             }
@@ -93,15 +148,26 @@ namespace Presence.Utils
 
         public static void WaitAction(Action action, float seconds)
         {
+            if (seconds == 0f)
+            {
+                action?.SafeInvoke();
+                return;
+            }
             Timer timer = new Timer(seconds * 1000);
             timer.Elapsed += (o, e) =>
             {
-                GetApp()?.Dispatcher?.Invoke(action);
+                action?.SafeInvoke();
                 timer.Stop();
                 timer.Dispose();
                 timer = null;
             };
             timer.Start();
+        }
+
+        public static void SafeInvoke(this Action action)
+        {
+            if (action == null) return;
+            GetApp()?.Dispatcher?.Invoke(action);
         }
     }
 }

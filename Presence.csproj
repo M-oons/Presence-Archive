@@ -71,7 +71,7 @@
     <Compile Include="App\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="App\Constants.cs" />
+    <Compile Include="App\AppInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -128,6 +128,9 @@
   <ItemGroup>
     <Resource Include="Icons\wumpus_on.ico" />
     <Resource Include="Icons\wumpus_off.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="todo" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Timers;
 using System.Windows;
 using DiscordRPC;
 using DiscordRPC.Message;
@@ -11,21 +13,39 @@ namespace Presence
         public DiscordRpcClient Client { get; private set; }
         public bool PresenceActive { get; private set; }
 
-        private string _lastClientID;
-        private DateTime _timestamp;
+        public bool ShouldResetTimestamp { get; set; } = true;
 
-        public Discord()
-        {
-            ResetTimestamp();
-        }
+        private DateTime _timestamp;
+        private string _lastClientID;
+        private bool _ready;
+        private bool _newProcess = true;
 
         public void Start()
         {
             if (Config.Current != null && Config.Current.Activity != null)
             {
                 Util.GetApp().SetupInputs();
+                StartTimer();
                 if (Config.Current.AutoStartPresence) UpdatePresence();
             }
+        }
+
+        private void StartTimer()
+        {
+            Timer timer = new Timer(100f);
+            timer.Elapsed += (s, e) =>
+            {
+                if (_ready && PresenceActive)
+                {
+                    SetPresence();
+                }
+                else
+                {
+                    ClearPresence();
+                }
+                //Client?.SynchronizeState();
+            };
+            timer.Start();
         }
 
         public void Quit()
@@ -37,27 +57,24 @@ namespace Presence
         public void ResetTimestamp()
         {
             _timestamp = DateTime.Now;
+            ShouldResetTimestamp = false;
         }
 
         public void UpdatePresence()
         {
             if (Config.Current != null && Config.Current.Activity != null && !string.IsNullOrEmpty(Config.Current.Activity.ClientID))
             {
-                // Clear existing presence
-                if (Client != null && !Client.IsDisposed) Client.ClearPresence();
-
-                if (_lastClientID == Config.Current.Activity.ClientID)
-                {
-                    // Update existing client
-                    SetPresence();
-                }
-                else
+                if (_lastClientID != Config.Current.Activity.ClientID)
                 {
                     // Create new client
-                    Client = new DiscordRpcClient(Config.Current.Activity.ClientID);
+                    Client = new DiscordRpcClient(Config.Current.Activity.ClientID)
+                    {
+                        SkipIdenticalPresence = true
+                    };
                     Client.OnReady += Client_OnReady;
                     Client.Initialize();
                 }
+                PresenceActive = true;
                 _lastClientID = Client.ApplicationID;
 
                 App app = Util.GetApp();
@@ -67,19 +84,19 @@ namespace Presence
                 {
                     // Hide start button
                     mainWindow.StartPresence_Button.IsEnabled = false;
-                    mainWindow.StartPresence_Button.Opacity = 0.5f;
+                    mainWindow.StartPresence_Button.Opacity = 0.75f;
                     mainWindow.StartPresence_Button.Visibility = Visibility.Hidden;
                     mainWindow.StartPresence_Rectangle.Visibility = Visibility.Hidden;
 
                     // Show update button
                     mainWindow.UpdatePresence_Button.IsEnabled = false;
-                    mainWindow.UpdatePresence_Button.Opacity = 0.5f;
+                    mainWindow.UpdatePresence_Button.Opacity = 0.75f;
                     mainWindow.UpdatePresence_Rectangle.Visibility = Visibility.Visible;
                     mainWindow.UpdatePresence_Button.Visibility = Visibility.Visible;
 
                     // Show stop button
                     mainWindow.StopPresence_Button.IsEnabled = false;
-                    mainWindow.StopPresence_Button.Opacity = 0.5f;
+                    mainWindow.StopPresence_Button.Opacity = 0.75f;
                     mainWindow.StopPresence_Rectangle.Visibility = Visibility.Visible;
                     mainWindow.StopPresence_Button.Visibility = Visibility.Visible;
 
@@ -107,29 +124,28 @@ namespace Presence
 
         public void StopPresence()
         {
-            Client?.ClearPresence();
             PresenceActive = false;
 
             App app = Util.GetApp();
             MainWindow mainWindow = Util.GetMainWindow();
-            
+
             if (mainWindow != null)
             {
                 // Hide update button
                 mainWindow.UpdatePresence_Button.IsEnabled = false;
-                mainWindow.UpdatePresence_Button.Opacity = 0.5f;
+                mainWindow.UpdatePresence_Button.Opacity = 0.75f;
                 mainWindow.UpdatePresence_Button.Visibility = Visibility.Hidden;
                 mainWindow.UpdatePresence_Rectangle.Visibility = Visibility.Hidden;
 
                 // Hide stop button
                 mainWindow.StopPresence_Button.IsEnabled = false;
-                mainWindow.StopPresence_Button.Opacity = 0.5f;
+                mainWindow.StopPresence_Button.Opacity = 0.75f;
                 mainWindow.StopPresence_Button.Visibility = Visibility.Hidden;
                 mainWindow.StopPresence_Rectangle.Visibility = Visibility.Hidden;
 
                 // Show start button
                 mainWindow.StartPresence_Button.IsEnabled = false;
-                mainWindow.StartPresence_Button.Opacity = 0.5f;
+                mainWindow.StartPresence_Button.Opacity = 0.75f;
                 mainWindow.StartPresence_Rectangle.Visibility = Visibility.Visible;
                 mainWindow.StartPresence_Button.Visibility = Visibility.Visible;
 
@@ -149,8 +165,16 @@ namespace Presence
 
         private void SetPresence()
         {
+            if (ShouldResetTimestamp)
+            {
+                ResetTimestamp();
+            }
             Client?.SetPresence(CreatePresence());
-            PresenceActive = true;
+        }
+
+        private void ClearPresence()
+        {
+            Client?.ClearPresence();
         }
 
         private RichPresence CreatePresence()
@@ -169,15 +193,43 @@ namespace Presence
             if (!string.IsNullOrEmpty(activity.SmallImageKey)) assets.SmallImageKey = activity.SmallImageKey;
             if (!string.IsNullOrEmpty(activity.SmallImageText)) assets.SmallImageText = activity.SmallImageText;
             presence.Assets = assets;
-            if (activity.ResetTimestamp) _timestamp = DateTime.Now;
             if (activity.ShowTimestamp) presence.Timestamps = new Timestamps(_timestamp);
 
             return presence;
         }
 
+        private void WatchProcess()
+        {
+            Process process = Util.GetDiscordProcess();
+            if (process != null)
+            {
+                process.EnableRaisingEvents = true;
+                process.Exited += (s, e) =>
+                {
+                    _ready = false;
+                    _newProcess = true;
+                };
+                _newProcess = false;
+            }
+        }
+
         private void Client_OnReady(object sender, ReadyMessage args)
         {
-            SetPresence();
+            _ready = true;
+
+            Util.WaitAction(() =>
+            {
+                if (PresenceActive)
+                {
+                    ClearPresence();
+                    SetPresence();
+                }
+            }, _newProcess ? 0f : 30f); // wait 30 seconds before setting presence if Discord was restarted with Ctrl + R
+            
+            if (_newProcess)
+            {
+                WatchProcess();
+            }
         }
     }
 }

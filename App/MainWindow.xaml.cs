@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Presence.Utils;
@@ -52,7 +51,7 @@ namespace Presence
 
         private void HelpButton_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(Constants.GITHUB_URL);
+            Util.StartProcess(AppInfo.URL);
         }
 
         private void Rectangle_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -115,8 +114,13 @@ namespace Presence
                     ResetTimestamp = ResetTimestampCheckbox.IsChecked ?? false
                 };
 
+                if (newActivity.ResetTimestamp)
+                {
+                    app.Discord.ShouldResetTimestamp = true;
+                }
+
                 // Only allow update if new presence is different
-                if (Config.Current != null && (!app.Discord.PresenceActive || !Config.Current.Activity.Equals(newActivity) || newActivity.ResetTimestamp))
+                if (Config.Current != null && (!app.Discord.PresenceActive || app.Discord.ShouldResetTimestamp || !Config.Current.Activity.Equals(newActivity)))
                 {
                     Config.Current.Activity = newActivity;
                     Config.Current.Save();

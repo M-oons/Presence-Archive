@@ -52,7 +52,7 @@ namespace Presence
 
             // Save button cooldown
             SaveSettings_Button.IsEnabled = false;
-            SaveSettings_Button.Opacity = 0.5f;
+            SaveSettings_Button.Opacity = 0.75f;
 
             Util.WaitAction(() =>
             {

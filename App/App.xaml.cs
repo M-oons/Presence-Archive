@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -14,8 +13,8 @@ namespace Presence
 {
     public partial class App : Application
     {
-        public Discord Discord { get; private set; }
         public NotifyIcon Tray { get; private set; }
+        public Discord Discord { get; private set; }
 
         private bool _quitting;
 
@@ -40,9 +39,12 @@ namespace Presence
         {
             base.OnStartup(e);
 
+            AppInfo.CheckInstance();
+            AppInfo.CheckForUpdate();
+
             Tray = new NotifyIcon
             {
-                Text = Constants.APP_NAME,
+                Text = AppInfo.NAME,
                 Icon = Presence.Properties.Resources.WumpusOffIcon,
                 Visible = true
             };
@@ -63,7 +65,7 @@ namespace Presence
         {
             Tray.ContextMenu = new ContextMenu();
 
-            var title = Tray.ContextMenu.MenuItems.Add(Constants.APP_NAME);
+            var title = Tray.ContextMenu.MenuItems.Add(AppInfo.NAME);
             title.Enabled = false;
             title.DefaultItem = true;
 
@@ -74,6 +76,36 @@ namespace Presence
 
             var quit = Tray.ContextMenu.MenuItems.Add("Quit");
             quit.Click += TrayQuit_Click;
+        }
+
+        public void Quit()
+        {
+            _quitting = true;
+            MainWindow?.Close();
+            Tray?.Dispose();
+            Tray = null;
+            Discord?.Quit();
+            Current?.Shutdown();
+        }
+
+        public void SetupInputs()
+        {
+            // Populate inputs with config values
+            MainWindow mainWindow = Util.GetMainWindow();
+
+            if (mainWindow != null && Config.Current != null)
+            {
+                Activity activity = Config.Current.Activity;
+                mainWindow.ClientID.Text = activity.ClientID;
+                mainWindow.Details.Text = activity.Details;
+                mainWindow.State.Text = activity.State;
+                mainWindow.LargeImageKey.Text = activity.LargeImageKey;
+                mainWindow.LargeImageText.Text = activity.LargeImageText;
+                mainWindow.SmallImageKey.Text = activity.SmallImageKey;
+                mainWindow.SmallImageText.Text = activity.SmallImageText;
+                mainWindow.ShowTimestampCheckbox.IsChecked = activity.ShowTimestamp;
+                mainWindow.ResetTimestampCheckbox.IsChecked = activity.ResetTimestamp;
+            }
         }
 
         private void ShowMainWindow()
@@ -91,30 +123,6 @@ namespace Presence
                 MainWindow.Show();
                 SetupInputs();
             }
-        }
-
-        private void Quit()
-        {
-            _quitting = true;
-            MainWindow.Close();
-            Tray.Dispose();
-            Tray = null;
-            Discord?.Quit();
-        }
-
-        public void SetupInputs()
-        {
-            // Populate inputs with config values
-            Activity activity = Config.Current.Activity;
-            Util.GetMainWindow().ClientID.Text = activity.ClientID;
-            Util.GetMainWindow().Details.Text = activity.Details;
-            Util.GetMainWindow().State.Text = activity.State;
-            Util.GetMainWindow().LargeImageKey.Text = activity.LargeImageKey;
-            Util.GetMainWindow().LargeImageText.Text = activity.LargeImageText;
-            Util.GetMainWindow().SmallImageKey.Text = activity.SmallImageKey;
-            Util.GetMainWindow().SmallImageText.Text = activity.SmallImageText;
-            Util.GetMainWindow().ShowTimestampCheckbox.IsChecked = activity.ShowTimestamp;
-            Util.GetMainWindow().ResetTimestampCheckbox.IsChecked = activity.ResetTimestamp;
         }
 
         private void MainWindow_Closing(object sender, CancelEventArgs e)
@@ -137,7 +145,7 @@ namespace Presence
 
         private void TrayFolder_Click(object sender, EventArgs e)
         {
-            Process.Start(Util.RootLocation);
+            Util.StartProcess(Util.RootLocation);
         }
 
         private void TrayQuit_Click(object sender, EventArgs e)

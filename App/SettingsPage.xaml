@@ -26,7 +26,8 @@
             FontSize="20"
             Background="Transparent"
             BorderThickness="0"
-            Focusable="False" Margin="0,2,2,0"/>
+            Focusable="False"
+            Margin="0,2,2,0" />
 
         <!-- Minimize button -->
         <Button WindowChrome.IsHitTestVisibleInChrome="True"
