@@ -4,6 +4,7 @@ using System.Timers;
 using System.Windows;
 using DiscordRPC;
 using DiscordRPC.Message;
+using Presence.Activities;
 using Presence.Utils;
 
 namespace Presence
@@ -14,7 +15,21 @@ namespace Presence
         public bool PresenceActive { get; private set; }
 
         public bool ShouldResetTimestamp { get; set; } = true;
+        public Activity CurrentActivity
+        {
+            get
+            {
+                return _currentActivity;
+            }
 
+            set
+            {
+                _currentActivity = value;
+                Util.GetMainWindow()?.SetupInputs(_currentActivity);
+            }
+        }
+
+        private Activity _currentActivity;
         private DateTime _timestamp;
         private string _lastClientID;
         private bool _ready;
@@ -22,11 +37,14 @@ namespace Presence
 
         public void Start()
         {
-            if (Config.Current != null && Config.Current.Activity != null)
+            if (Config.Current != null)
             {
-                Util.GetApp().SetupInputs();
+                CurrentActivity = Config.Current.GetActivity()?.Activity;
                 StartTimer();
-                if (Config.Current.AutoStartPresence) UpdatePresence();
+                if (Config.Current.AutoStartPresence)
+                {
+                    UpdatePresence(CurrentActivity);
+                }
             }
         }
 
@@ -43,7 +61,6 @@ namespace Presence
                 {
                     ClearPresence();
                 }
-                //Client?.SynchronizeState();
             };
             timer.Start();
         }
@@ -60,14 +77,14 @@ namespace Presence
             ShouldResetTimestamp = false;
         }
 
-        public void UpdatePresence()
+        public void UpdatePresence(Activity activity)
         {
-            if (Config.Current != null && Config.Current.Activity != null && !string.IsNullOrEmpty(Config.Current.Activity.ClientID))
+            if (activity != null && !string.IsNullOrEmpty(activity.ClientID))
             {
-                if (_lastClientID != Config.Current.Activity.ClientID)
+                if (_lastClientID != activity.ClientID)
                 {
                     // Create new client
-                    Client = new DiscordRpcClient(Config.Current.Activity.ClientID)
+                    Client = new DiscordRpcClient(activity.ClientID)
                     {
                         SkipIdenticalPresence = true
                     };
@@ -75,6 +92,7 @@ namespace Presence
                     Client.Initialize();
                 }
                 PresenceActive = true;
+                CurrentActivity = activity;
                 _lastClientID = Client.ApplicationID;
 
                 App app = Util.GetApp();
@@ -117,7 +135,6 @@ namespace Presence
             }
             else
             {
-                // Clear presence if config is invalid
                 StopPresence();
             }
         }
@@ -180,7 +197,8 @@ namespace Presence
         private RichPresence CreatePresence()
         {
             if (Config.Current == null) return new RichPresence();
-            Activity activity = Config.Current.Activity;
+            SavedActivity savedActivity = Config.Current.GetActivity();
+            Activity activity = savedActivity?.Activity;
             if (activity == null) return new RichPresence();
 
             // Create presence from config
@@ -207,7 +225,7 @@ namespace Presence
                 process.Exited += (s, e) =>
                 {
                     _ready = false;
-                    _newProcess = true;
+                    _newProcess = true; // next ready event will be fired when a new Discord process is started
                 };
                 _newProcess = false;
             }
@@ -225,7 +243,7 @@ namespace Presence
                     SetPresence();
                 }
             }, _newProcess ? 0f : 30f); // wait 30 seconds before setting presence if Discord was restarted with Ctrl + R
-            
+
             if (_newProcess)
             {
                 WatchProcess();

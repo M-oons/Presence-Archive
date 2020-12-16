@@ -1,4 +1,4 @@
-﻿namespace Presence
+﻿namespace Presence.Activities
 {
     public class Activity
     {
@@ -25,6 +25,18 @@
                 SmallImageText == other.SmallImageText &&
                 ShowTimestamp == other.ShowTimestamp &&
                 ResetTimestamp == other.ResetTimestamp;
+        }
+
+        public bool IsValid()
+        {
+            return
+                !string.IsNullOrWhiteSpace(ClientID) && ClientID.Length <= 18 &&
+                (string.IsNullOrEmpty(Details) || Details.Length <= 64) &&
+                (string.IsNullOrEmpty(State) || State.Length <= 64) &&
+                (string.IsNullOrEmpty(LargeImageKey) || LargeImageKey.Length <= 16) &&
+                (string.IsNullOrEmpty(SmallImageKey) || SmallImageKey.Length <= 16) &&
+                (string.IsNullOrEmpty(LargeImageText) || LargeImageText.Length <= 64) &&
+                (string.IsNullOrEmpty(SmallImageText) || SmallImageText.Length <= 64);
         }
     }
 }

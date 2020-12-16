@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using Presence.Utils;
 
-namespace Presence
+namespace Presence.Pages
 {
     public partial class SettingsPage : Page
     {
@@ -11,20 +11,28 @@ namespace Presence
             InitializeComponent();
         }
 
+        public void LoadSettings()
+        {
+            if (Config.Current != null)
+            {
+                AutoStartPresence.IsChecked = Config.Current.AutoStartPresence;
+            }
+            RunOnStartup.IsChecked = Util.IsOnStartup();
+        }
+
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            GoBack();
-            Application.Current.MainWindow.Close();
+            Util.GetApp()?.Close();
         }
 
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.MainWindow.WindowState = WindowState.Minimized;
+            Util.GetApp()?.Minimize();
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            GoBack();
+            Util.GetApp()?.ChangePage(AppPage.Main);
         }
 
         private void SaveSettingsButton_Click(object sender, RoutedEventArgs e)
@@ -59,11 +67,6 @@ namespace Presence
                 SaveSettings_Button.IsEnabled = true;
                 SaveSettings_Button.Opacity = 1f;
             }, 1f);
-        }
-
-        private void GoBack()
-        {
-            Application.Current.MainWindow.Content = Util.GetMainWindow().OriginalContent;
         }
     }
 }

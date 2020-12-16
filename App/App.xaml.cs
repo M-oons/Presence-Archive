@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Forms;
+using Presence.Pages;
 using Presence.Utils;
 
 using Application = System.Windows.Application;
@@ -61,21 +62,49 @@ namespace Presence
             Discord.Start();
         }
 
-        private void CreateTrayMenu()
+        public void ChangePage(AppPage page)
         {
-            Tray.ContextMenu = new ContextMenu();
+            MainWindow mainWindow = Util.GetMainWindow();
+            if (mainWindow != null)
+            {
+                switch (page)
+                {
+                    default:
+                    case AppPage.Main:
+                        Current.MainWindow.Content = mainWindow.OriginalContent;
+                        break;
 
-            var title = Tray.ContextMenu.MenuItems.Add(AppInfo.NAME);
-            title.Enabled = false;
-            title.DefaultItem = true;
+                    case AppPage.Activities:
+                        ActivitiesPage activitiesPage = mainWindow.ActivitiesPage;
+                        if (activitiesPage != null)
+                        {
+                            activitiesPage.LoadActivities();
+                            Current.MainWindow.Content = activitiesPage.Content;
+                        }
+                        break;
 
-            Tray.ContextMenu.MenuItems.Add("-"); // Separator
+                    case AppPage.Settings:
+                        SettingsPage settingsPage = mainWindow.SettingsPage;
+                        if (settingsPage != null)
+                        {
+                            settingsPage.LoadSettings();
+                            Current.MainWindow.Content = settingsPage.Content;
+                        }
+                        break;
+                }
+            }
+        }
 
-            var folder = Tray.ContextMenu.MenuItems.Add("Open Folder");
-            folder.Click += TrayFolder_Click;
+        public void Minimize()
+        {
+            Current.MainWindow.WindowState = WindowState.Minimized;
+        }
 
-            var quit = Tray.ContextMenu.MenuItems.Add("Quit");
-            quit.Click += TrayQuit_Click;
+        public void Close()
+        {
+            ChangePage(AppPage.Main);
+            Minimize();
+            Util.WaitAction(Current.MainWindow.Close, 0.5f);
         }
 
         public void Quit()
@@ -88,24 +117,31 @@ namespace Presence
             Current?.Shutdown();
         }
 
-        public void SetupInputs()
+        private void CreateTrayMenu()
         {
-            // Populate inputs with config values
-            MainWindow mainWindow = Util.GetMainWindow();
+            Tray.ContextMenu = new ContextMenu();
 
-            if (mainWindow != null && Config.Current != null)
-            {
-                Activity activity = Config.Current.Activity;
-                mainWindow.ClientID.Text = activity.ClientID;
-                mainWindow.Details.Text = activity.Details;
-                mainWindow.State.Text = activity.State;
-                mainWindow.LargeImageKey.Text = activity.LargeImageKey;
-                mainWindow.LargeImageText.Text = activity.LargeImageText;
-                mainWindow.SmallImageKey.Text = activity.SmallImageKey;
-                mainWindow.SmallImageText.Text = activity.SmallImageText;
-                mainWindow.ShowTimestampCheckbox.IsChecked = activity.ShowTimestamp;
-                mainWindow.ResetTimestampCheckbox.IsChecked = activity.ResetTimestamp;
-            }
+            var title = Tray.ContextMenu.MenuItems.Add(AppInfo.NAME);
+            title.Enabled = false;
+            title.DefaultItem = true;
+
+            Tray.ContextMenu.MenuItems.Add("-"); // Separator
+
+            var location = Tray.ContextMenu.MenuItems.Add("Open App Location");
+            location.Click += TrayLocation_Click;
+
+            var data = Tray.ContextMenu.MenuItems.Add("Open Data Folder");
+            data.Click += TrayData_Click;
+
+            Tray.ContextMenu.MenuItems.Add("-"); // Separator
+
+            var update = Tray.ContextMenu.MenuItems.Add("Check For Update");
+            update.Click += TrayUpdate_Click;
+
+            Tray.ContextMenu.MenuItems.Add("-"); // Separator
+
+            var quit = Tray.ContextMenu.MenuItems.Add("Quit");
+            quit.Click += TrayQuit_Click;
         }
 
         private void ShowMainWindow()
@@ -116,13 +152,13 @@ namespace Presence
                 {
                     MainWindow.WindowState = WindowState.Normal;
                 }
-                MainWindow.Activate();
             }
             else
             {
                 MainWindow.Show();
-                SetupInputs();
             }
+            MainWindow.Activate();
+            Util.GetMainWindow()?.SetupInputs(Config.Current?.GetActivity()?.Activity);
         }
 
         private void MainWindow_Closing(object sender, CancelEventArgs e)
@@ -143,9 +179,19 @@ namespace Presence
             }
         }
 
-        private void TrayFolder_Click(object sender, EventArgs e)
+        private void TrayLocation_Click(object sender, EventArgs e)
+        {
+            Util.StartProcess("explorer.exe", $"/select, \"{Util.AppLocation}\"");
+        }
+
+        private void TrayData_Click(object sender, EventArgs e)
         {
             Util.StartProcess(Util.RootLocation);
+        }
+
+        private void TrayUpdate_Click(object sender, EventArgs e)
+        {
+            AppInfo.CheckForUpdate(true);
         }
 
         private void TrayQuit_Click(object sender, EventArgs e)

@@ -1,0 +1,131 @@
+﻿<Page x:Class="Presence.Pages.ActivitiesPage"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Presence"
+        Width="600"
+        Height="600"
+        Background="#1B1B1B">
+
+    <Grid Margin="2,2,2,2">
+        <!-- Background -->
+        <Rectangle Fill="White"/>
+        <Rectangle Margin="2,2,2,2" Fill="#7289DA" MouseLeftButtonUp="Rectangle_MouseLeftButtonUp"/>
+
+        <!-- Close button -->
+        <Button WindowChrome.IsHitTestVisibleInChrome="True"
+            Content="⨉"
+            Foreground="White"
+            Click="CloseButton_Click"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Width="50"
+            Height="50"
+            FontSize="20"
+            Background="Transparent"
+            BorderThickness="0"
+            Focusable="False"
+            Margin="0,2,2,0" />
+
+        <!-- Minimize button -->
+        <Button WindowChrome.IsHitTestVisibleInChrome="True"
+            Content="─"
+            Foreground="White"
+            Click="MinimizeButton_Click"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Width="50"
+            Height="50"
+            FontSize="20"
+            Background="Transparent"
+            BorderThickness="0"
+            Focusable="False"
+            Margin="0,2,52,0" />
+
+        <!-- Back button -->
+        <Button WindowChrome.IsHitTestVisibleInChrome="True"
+            Content="🡐"
+            Foreground="White"
+            Click="BackButton_Click"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Width="50"
+            Height="50"
+            FontSize="20"
+            Background="Transparent"
+            BorderThickness="0"
+            Focusable="False" Margin="2,2,0,0" />
+
+        <!-- Activity 1 -->
+        <Rectangle Margin="50,98,218,458" Fill="#1B1B1B"></Rectangle>
+        <Label Name="Activity1_Placeholder" Margin="52,100,220,460" Content="Activity 1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" FontStyle="Italic" Foreground="Gray" BorderThickness="0" Background="White"></Label>
+        <TextBox Name="Activity1" Margin="52,100,220,460" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="20" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Background="Transparent" TextChanged="Activity1_TextChanged"></TextBox>
+
+        <Rectangle Margin="394,98,162,458" Fill="#1B1B1B"></Rectangle>
+        <Button Name="SaveActivity1_Button" Content="💾" Margin="396,100,164,460" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="SaveActivity1Button_Click"></Button>
+
+        <Rectangle Margin="450,98,106,458" Fill="#1B1B1B"></Rectangle>
+        <Button Name="ResetActivity1_Button" Content="🗑️" Margin="452,100,108,460" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="ResetActivity1Button_Click"></Button>
+
+        <Rectangle Margin="506,98,50,458" Fill="#1B1B1B"></Rectangle>
+        <Button Name="LoadActivity1_Button" Content="✓" Margin="508,100,52,460" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="LoadActivity1Button_Click"></Button>
+
+        <!-- Activity 2 -->
+        <Rectangle Margin="50,188,218,368" Fill="#1B1B1B"></Rectangle>
+        <Label Name="Activity2_Placeholder" Margin="52,190,220,370" Content="Activity 2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" FontStyle="Italic" Foreground="Gray" BorderThickness="0" Background="White"></Label>
+        <TextBox Name="Activity2" Margin="52,190,220,370" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="20" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Background="Transparent" TextChanged="Activity2_TextChanged"></TextBox>
+
+        <Rectangle Margin="394,188,162,368" Fill="#1B1B1B"></Rectangle>
+        <Button Name="SaveActivity2_Button" Content="💾" Margin="396,190,164,370" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="SaveActivity2Button_Click"></Button>
+
+        <Rectangle Margin="450,188,106,368" Fill="#1B1B1B"></Rectangle>
+        <Button Name="ResetActivity2_Button" Content="🗑️" Margin="452,190,108,370" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="ResetActivity2Button_Click"></Button>
+
+        <Rectangle Margin="506,188,50,368" Fill="#1B1B1B"></Rectangle>
+        <Button Name="LoadActivity2_Button" Content="✓" Margin="508,190,52,370" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="LoadActivity2Button_Click"></Button>
+
+        <!-- Activity 3 -->
+        <Rectangle Margin="50,278,218,278" Fill="#1B1B1B"></Rectangle>
+        <Label Name="Activity3_Placeholder" Margin="52,280,220,280" Content="Activity 3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" FontStyle="Italic" Foreground="Gray" BorderThickness="0" Background="White"></Label>
+        <TextBox Name="Activity3" Margin="52,280,220,280" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="20" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Background="Transparent" TextChanged="Activity3_TextChanged"></TextBox>
+
+        <Rectangle Margin="394,278,162,278" Fill="#1B1B1B"></Rectangle>
+        <Button Name="SaveActivity3_Button" Content="💾" Margin="396,280,164,280" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="SaveActivity3Button_Click"></Button>
+
+        <Rectangle Margin="450,278,106,278" Fill="#1B1B1B"></Rectangle>
+        <Button Name="ResetActivity3_Button" Content="🗑️" Margin="452,280,108,280" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="ResetActivity3Button_Click"></Button>
+
+        <Rectangle Margin="506,278,50,278" Fill="#1B1B1B"></Rectangle>
+        <Button Name="LoadActivity3_Button" Content="✓" Margin="508,280,52,280" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="LoadActivity3Button_Click"></Button>
+
+        <!-- Activity 4 -->
+        <Rectangle Margin="50,368,218,188" Fill="#1B1B1B"></Rectangle>
+        <Label Name="Activity4_Placeholder" Margin="52,370,220,190" Content="Activity 4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" FontStyle="Italic" Foreground="Gray" BorderThickness="0" Background="White"></Label>
+        <TextBox Name="Activity4" Margin="52,370,220,190" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="20" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Background="Transparent" TextChanged="Activity4_TextChanged"></TextBox>
+
+        <Rectangle Margin="394,368,162,188" Fill="#1B1B1B"></Rectangle>
+        <Button Name="SaveActivity4_Button" Content="💾" Margin="396,370,164,190" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="SaveActivity4Button_Click"></Button>
+
+        <Rectangle Margin="450,368,106,188" Fill="#1B1B1B"></Rectangle>
+        <Button Name="ResetActivity4_Button" Content="🗑️" Margin="452,370,108,190" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="ResetActivity4Button_Click"></Button>
+
+        <Rectangle Margin="506,368,50,188" Fill="#1B1B1B"></Rectangle>
+        <Button Name="LoadActivity4_Button" Content="✓" Margin="508,370,52,190" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="LoadActivity4Button_Click"></Button>
+
+        <!-- Activity 5 -->
+        <Rectangle Margin="50,458,218,98" Fill="#1B1B1B"></Rectangle>
+        <Label Name="Activity5_Placeholder" Margin="52,460,220,100" Content="Activity 5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" FontStyle="Italic" Foreground="Gray" BorderThickness="0" Background="White"></Label>
+        <TextBox Name="Activity5" Margin="52,460,220,100" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="20" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Background="Transparent" TextChanged="Activity5_TextChanged"></TextBox>
+
+        <Rectangle Margin="394,458,162,98" Fill="#1B1B1B"></Rectangle>
+        <Button Name="SaveActivity5_Button" Content="💾" Margin="396,460,164,100" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="SaveActivity5Button_Click"></Button>
+
+        <Rectangle Margin="450,458,106,98" Fill="#1B1B1B"></Rectangle>
+        <Button Name="ResetActivity5_Button" Content="🗑️" Margin="452,460,108,100" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="ResetActivity5Button_Click"></Button>
+
+        <Rectangle Margin="506,458,50,98" Fill="#1B1B1B"></Rectangle>
+        <Button Name="LoadActivity5_Button" Content="✓" Margin="508,460,52,100" FontSize="14" FontWeight="Bold" Foreground="#1B1B1B" BorderThickness="0" Focusable="False" Background="White" Click="LoadActivity5Button_Click"></Button>
+    </Grid>
+</Page>

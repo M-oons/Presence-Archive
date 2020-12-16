@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Presence.Activities;
+using Presence.Pages;
 using Presence.Utils;
 
 namespace Presence
@@ -8,23 +10,57 @@ namespace Presence
     public partial class MainWindow : Window
     {
         public SettingsPage SettingsPage { get; }
+        public ActivitiesPage ActivitiesPage { get; }
         public object OriginalContent { get; }
 
         public MainWindow()
         {
             InitializeComponent();
             SettingsPage = new SettingsPage();
+            ActivitiesPage = new ActivitiesPage();
             OriginalContent = Content;
+        }
+
+        public void SetupInputs(Activity activity)
+        {
+            // Populate inputs
+            if (activity != null)
+            {
+                ClientID.Text = activity.ClientID;
+                Details.Text = activity.Details;
+                State.Text = activity.State;
+                LargeImageKey.Text = activity.LargeImageKey;
+                LargeImageText.Text = activity.LargeImageText;
+                SmallImageKey.Text = activity.SmallImageKey;
+                SmallImageText.Text = activity.SmallImageText;
+                ShowTimestampCheckbox.IsChecked = activity.ShowTimestamp;
+                ResetTimestampCheckbox.IsChecked = activity.ResetTimestamp;
+            }
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.MainWindow.Close();
+            Util.GetApp()?.Close();
         }
 
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.MainWindow.WindowState = WindowState.Minimized;
+            Util.GetApp()?.Minimize();
+        }
+
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            Util.GetApp()?.ChangePage(AppPage.Settings);
+        }
+
+        private void ActivitiesButton_Click(object sender, RoutedEventArgs e)
+        {
+            Util.GetApp()?.ChangePage(AppPage.Activities);
+        }
+
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            Util.StartProcess(AppInfo.URL);
         }
 
         private void StartPresenceButton_Click(object sender, RoutedEventArgs e)
@@ -39,19 +75,7 @@ namespace Presence
 
         private void StopPresenceButton_Click(object sender, RoutedEventArgs e)
         {
-            App app = Util.GetApp();
-            app?.Discord?.StopPresence();
-        }
-
-        private void SettingsButton_Click(object sender, RoutedEventArgs e)
-        {
-            LoadSettings();
-            Application.Current.MainWindow.Content = SettingsPage.Content;
-        }
-
-        private void HelpButton_Click(object sender, RoutedEventArgs e)
-        {
-            Util.StartProcess(AppInfo.URL);
+            Util.GetApp()?.Discord?.StopPresence();
         }
 
         private void Rectangle_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -99,7 +123,7 @@ namespace Presence
         {
             App app = Util.GetApp();
 
-            if (app != null && app.Discord != null)
+            if (app != null && app.Discord != null && Config.Current != null)
             {
                 Activity newActivity = new Activity
                 {
@@ -114,29 +138,37 @@ namespace Presence
                     ResetTimestamp = ResetTimestampCheckbox.IsChecked ?? false
                 };
 
+                bool usingSavedActivity = Config.Current.UsingSavedActivity();
+
+                if (usingSavedActivity && !newActivity.Equals(Config.Current.GetActivity()?.Activity))
+                {
+                    usingSavedActivity = false;
+                }
+
                 if (newActivity.ResetTimestamp)
                 {
                     app.Discord.ShouldResetTimestamp = true;
                 }
 
                 // Only allow update if new presence is different
-                if (Config.Current != null && (!app.Discord.PresenceActive || app.Discord.ShouldResetTimestamp || !Config.Current.Activity.Equals(newActivity)))
+                if (newActivity.IsValid() && (!app.Discord.PresenceActive || app.Discord.ShouldResetTimestamp || !newActivity.Equals(app.Discord.CurrentActivity)))
                 {
-                    Config.Current.Activity = newActivity;
-                    Config.Current.Save();
+                    // Change to default activity if the inputs have been changed
+                    if (!usingSavedActivity)
+                    {
+                        Config.Current.Activity = 0;
+                    }
 
-                    app.Discord.UpdatePresence();
+                    // Save new activity as default
+                    Config.Current.SaveActivity(0, new SavedActivity
+                    {
+                        Name = "Default",
+                        Activity = newActivity
+                    });
+
+                    app.Discord.UpdatePresence(newActivity);
                 }
             }
-        }
-
-        private void LoadSettings()
-        {
-            if (Config.Current != null)
-            {
-                SettingsPage.AutoStartPresence.IsChecked = Config.Current.AutoStartPresence;
-            }
-            SettingsPage.RunOnStartup.IsChecked = Util.IsOnStartup();
         }
     }
 }

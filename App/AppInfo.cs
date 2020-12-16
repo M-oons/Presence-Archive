@@ -9,7 +9,7 @@ namespace Presence
     public static class AppInfo
     {
         public const string NAME = "Presence";
-        public const string VERSION = "1.1.0";
+        public const string VERSION = "1.2.0";
         public const string URL = "https://github.com/M-oons/Presence";
 
         private static readonly HttpClient _client;
@@ -25,7 +25,7 @@ namespace Presence
             _client.DefaultRequestHeaders.Add("User-Agent", "M-oons/Presence"); // GitHub API requires User-Agent header
         }
 
-        public static async void CheckForUpdate()
+        public static async void CheckForUpdate(bool alertNoUpdate = false)
         {
             HttpResponseMessage response = await _client.GetAsync("/repos/M-oons/Presence/releases/latest");
             if (response.IsSuccessStatusCode)
@@ -43,6 +43,10 @@ namespace Presence
                             Util.StartProcess($"{URL}/releases");
                         }));
                     }
+                    else if (alertNoUpdate) // already running latest version
+                    {
+                        Util.Info("No Update Available", "You are already running the latest version of Presence.");
+                    }
                 }
             }
         }
@@ -51,7 +55,7 @@ namespace Presence
         {
             if (Util.GetProcesses("Presence").Length > 1) // Presence is already running in another process
             {
-                Util.Alert("Already running", "An instance of Presence is already running in another process.", new Action(() =>
+                Util.Warning("Already running", "An instance of Presence is already running in another process.", new Action(() =>
                 {
                     Util.GetApp()?.Quit();
                 }));

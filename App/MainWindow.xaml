@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Presence"
         WindowStyle="None"
-        ResizeMode="NoResize"
+        ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
         Width="600"
         Height="600"
@@ -53,9 +53,24 @@
 
         <!-- Settings button -->
         <Button WindowChrome.IsHitTestVisibleInChrome="True"
-            Content="☼"
+            Content="⚙️"
             Foreground="White"
             Click="SettingsButton_Click"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Width="50"
+            Height="50"
+            FontSize="16"
+            Background="Transparent"
+            BorderThickness="0"
+            Focusable="False"
+            Margin="0,2,102,0" />
+
+        <!-- Activities button -->
+        <Button WindowChrome.IsHitTestVisibleInChrome="True"
+            Content="☰"
+            Foreground="White"
+            Click="ActivitiesButton_Click"
             HorizontalAlignment="Right"
             VerticalAlignment="Top"
             Width="50"
@@ -64,8 +79,8 @@
             Background="Transparent"
             BorderThickness="0"
             Focusable="False"
-            Margin="0,2,102,0" />
-
+            Margin="0,2,152,0" />
+        
         <!-- Help button --> 
         <Button WindowChrome.IsHitTestVisibleInChrome="True"
             Content="?"
@@ -79,7 +94,7 @@
             Background="Transparent"
             BorderThickness="0"
             Focusable="False"
-            Margin="0,2,152,0" />
+            Margin="0,2,202,0" />
 
         <!-- Client ID -->
         <Rectangle Margin="50,63,50,493" Fill="#1B1B1B"></Rectangle>

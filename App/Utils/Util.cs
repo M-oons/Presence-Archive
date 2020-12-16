@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -28,7 +29,15 @@ namespace Presence.Utils
             }
         }
 
-        public static void CreateRootFolder()
+        public static string AppLocation
+        {
+            get
+            {
+                return Assembly.GetExecutingAssembly().Location;
+            }
+        }
+
+        public static void CreateDataFolder()
         {
             Directory.CreateDirectory(RootLocation);
         }
@@ -46,6 +55,11 @@ namespace Presence.Utils
         public static void StartProcess(string name)
         {
             Process.Start(name);
+        }
+
+        public static void StartProcess(string name, string args)
+        {
+            Process.Start(name, args);
         }
 
         public static Process[] GetProcesses(string name)
@@ -86,9 +100,18 @@ namespace Presence.Utils
             }
         }
 
-        public static void Alert(string title, string message, Action okAction = null)
+        public static void Warning(string title, string message, Action okAction = null)
         {
             MessageBoxResult result = MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            if (result == MessageBoxResult.OK)
+            {
+                okAction?.Invoke();
+            }
+        }
+
+        public static void Info(string title, string message, Action okAction = null)
+        {
+            MessageBoxResult result = MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
             if (result == MessageBoxResult.OK)
             {
                 okAction?.Invoke();
@@ -102,7 +125,7 @@ namespace Presence.Utils
                 RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
                 if (key != null)
                 {
-                    key.SetValue(AppInfo.NAME, Assembly.GetExecutingAssembly().Location);
+                    key.SetValue(AppInfo.NAME, AppLocation);
                     return true;
                 }
             }
@@ -137,7 +160,7 @@ namespace Presence.Utils
                 if (key != null)
                 {
                     string path = key.GetValue(AppInfo.NAME)?.ToString();
-                    return path != null && path.ToLower() == Assembly.GetExecutingAssembly().Location.ToLower();
+                    return path != null && path.ToLower() == AppLocation.ToLower();
                 }
             }
             catch
