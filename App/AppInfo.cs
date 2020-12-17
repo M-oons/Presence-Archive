@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Presence.Utils;
 
 namespace Presence
@@ -9,7 +10,7 @@ namespace Presence
     public static class AppInfo
     {
         public const string NAME = "Presence";
-        public const string VERSION = "1.2.0";
+        public const string VERSION = "1.2.1";
         public const string URL = "https://github.com/M-oons/Presence";
 
         private static readonly HttpClient _client;
@@ -27,27 +28,34 @@ namespace Presence
 
         public static async void CheckForUpdate(bool alertNoUpdate = false)
         {
-            HttpResponseMessage response = await _client.GetAsync("/repos/M-oons/Presence/releases/latest");
-            if (response.IsSuccessStatusCode)
+            AppUpdateResult result = await GetUpdateResult();
+            switch (result.Type)
             {
-                string content = await response.Content.ReadAsStringAsync();
-                Dictionary<string, object> data = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
-
-                if (data != null && data.TryGetValue("tag_name", out object tag))
-                {
-                    string latest = tag.ToString();
-                    if (CompareVersion(latest) == 1) // newer version is available
+                case AppUpdateResult.ResultType.Update:
+                    string url = result.DownloadURL;
+                    if (!string.IsNullOrEmpty(url))
                     {
-                        Util.Popup("Update Available", "A newer version of Presence is available.\n\nWould you like to open the GitHub releases page?", new Action(() =>
+                        Util.Popup("Update Available", "A newer version of Presence is available.\n\nWould you like to download the latest version?", new Action(() =>
                         {
-                            Util.StartProcess($"{URL}/releases");
+                            Util.StartProcess(url);
                         }));
                     }
-                    else if (alertNoUpdate) // already running latest version
+                    break;
+
+                case AppUpdateResult.ResultType.NoUpdate:
+                    if (alertNoUpdate)
                     {
                         Util.Info("No Update Available", "You are already running the latest version of Presence.");
                     }
-                }
+                    break;
+
+                case AppUpdateResult.ResultType.Error:
+                default:
+                    if (alertNoUpdate)
+                    {
+                        Util.Warning("Error Checking For Update", "An error occured when checking for the latest version of Presence.");
+                    }
+                    break;
             }
         }
 
@@ -62,26 +70,46 @@ namespace Presence
             }
         }
 
+        private static async Task<AppUpdateResult> GetUpdateResult()
+        {
+            HttpResponseMessage response = await _client.GetAsync("/repos/M-oons/Presence/releases/latest");
+            if (response.IsSuccessStatusCode)
+            {
+                string content = await response.Content.ReadAsStringAsync();
+                JObject data = JsonConvert.DeserializeObject<JObject>(content);
+
+                if (data != null && data.TryGetValue("tag_name", out JToken tagToken))
+                {
+                    string latest = tagToken.ToString();
+                    if (CompareVersion(latest) < 0 && data.TryGetValue("assets", out JToken assetsToken)) // newer version is available
+                    {
+                        if (assetsToken is JArray assets && assets.Count > 0 // "assets" is an array
+                            && assets.First is JObject asset // "asset" is an object
+                            && asset.TryGetValue("browser_download_url", out JToken urlToken))
+                        {
+                            string url = urlToken.ToString();
+                            return AppUpdateResult.Update(url);
+                        }
+                    }
+                    else // already running latest version
+                    {
+                        return AppUpdateResult.NoUpdate();
+                    }
+                }
+            }
+            return AppUpdateResult.Error();
+        }
+
         private static int CompareVersion(string version)
         {
-            //  1 : Compared version is newer than current
-            //  0 : Compared version is same as current
-            // -1 : Compared version is older than current
+            // -1 : Current version is older than compared version
+            //  0 : Current version is same as compared version
+            //  1 : Current version is newer than compared version
 
-            int currentVersion = int.TryParse(VERSION.Replace(".", ""), out int current) ? current : 0;
-            int compareVersion = int.TryParse(version.Replace(".", ""), out int compare) ? compare : 0;
+            Version currentVersion = new Version(VERSION);
+            Version compareVersion = new Version(version);
 
-            int result = -1;
-
-            if (compareVersion > currentVersion)
-            {
-                result = 1;
-            }
-            else if (compareVersion == currentVersion)
-            {
-                result = 0;
-            }
-            return result;
+            return currentVersion.CompareTo(compareVersion);
         }
     }
 }
