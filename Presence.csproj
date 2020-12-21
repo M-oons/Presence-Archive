@@ -66,6 +66,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="App\API.cs" />
     <Compile Include="App\AppUpdateResult.cs" />
     <Compile Include="App\Activities\SavedActivity.cs" />
     <Compile Include="App\Config.cs" />

@@ -13,19 +13,6 @@ namespace Presence
         public const string VERSION = "1.2.1";
         public const string URL = "https://github.com/M-oons/Presence";
 
-        private static readonly HttpClient _client;
-
-        static AppInfo()
-        {
-            _client = new HttpClient
-            {
-                BaseAddress = new Uri("https://api.github.com")
-            };
-            _client.DefaultRequestHeaders.Clear();
-            _client.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json"); // Use GitHub API v3
-            _client.DefaultRequestHeaders.Add("User-Agent", "M-oons/Presence"); // GitHub API requires User-Agent header
-        }
-
         public static async void CheckForUpdate(bool alertNoUpdate = false)
         {
             AppUpdateResult result = await GetUpdateResult();
@@ -72,7 +59,7 @@ namespace Presence
 
         private static async Task<AppUpdateResult> GetUpdateResult()
         {
-            HttpResponseMessage response = await _client.GetAsync("/repos/M-oons/Presence/releases/latest");
+            HttpResponseMessage response = await API.Get("/repos/M-oons/Presence/releases/latest");
             if (response.IsSuccessStatusCode)
             {
                 string content = await response.Content.ReadAsStringAsync();

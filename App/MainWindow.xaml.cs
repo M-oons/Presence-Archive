@@ -36,6 +36,9 @@ namespace Presence
                 ShowTimestampCheckbox.IsChecked = activity.ShowTimestamp;
                 ResetTimestampCheckbox.IsChecked = activity.ResetTimestamp;
             }
+
+            // Unfocus all inputs
+            Keyboard.ClearFocus();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
