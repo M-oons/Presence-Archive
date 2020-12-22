@@ -13,8 +13,7 @@ namespace Presence
     {
         public DiscordRpcClient Client { get; private set; }
         public bool PresenceActive { get; private set; }
-
-        public bool ShouldResetTimestamp { get; set; } = true;
+        public bool ShouldResetTimestamp { get; set; }
         public Activity CurrentActivity
         {
             get
@@ -30,6 +29,7 @@ namespace Presence
         }
 
         private Activity _currentActivity;
+        private Timer _timer;
         private DateTime _timestamp;
         private string _lastClientID;
         private bool _ready;
@@ -39,6 +39,7 @@ namespace Presence
         {
             if (Config.Current != null)
             {
+                ResetTimestamp();
                 CurrentActivity = Config.Current.GetActivity()?.Activity;
                 StartTimer();
                 if (Config.Current.AutoStartPresence)
@@ -50,8 +51,7 @@ namespace Presence
 
         private void StartTimer()
         {
-            Timer timer = new Timer(100f);
-            timer.Elapsed += (s, e) =>
+            _timer = Util.CreateTimer(() =>
             {
                 if (_ready && PresenceActive)
                 {
@@ -61,8 +61,8 @@ namespace Presence
                 {
                     ClearPresence();
                 }
-            };
-            timer.Start();
+            }, 0.2f);
+            _timer.Start();
         }
 
         public void Quit()

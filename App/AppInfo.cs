@@ -23,10 +23,10 @@ namespace Presence
                     string url = result.DownloadURL;
                     if (!string.IsNullOrEmpty(url))
                     {
-                        Util.Popup("Update Available", "A newer version of Presence is available.\n\nWould you like to download the latest version?", new Action(() =>
+                        Util.Popup("Update Available", "A newer version of Presence is available.\n\nWould you like to download the latest version?", () =>
                         {
                             Util.StartProcess(url);
-                        }));
+                        });
                     }
                     break;
 
@@ -51,10 +51,10 @@ namespace Presence
         {
             if (Util.GetProcesses("Presence").Length > 1) // Presence is already running in another process
             {
-                Util.Warning("Already running", "An instance of Presence is already running in another process.", new Action(() =>
+                Util.Warning("Already running", "An instance of Presence is already running in another process.", () =>
                 {
                     Util.GetApp()?.Quit();
-                }));
+                });
             }
         }
 

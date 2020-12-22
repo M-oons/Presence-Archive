@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -169,6 +168,16 @@ namespace Presence.Utils
             return false;
         }
 
+        public static Timer CreateTimer(Action action, float seconds)
+        {
+            Timer timer = new Timer(seconds * 1000f);
+            timer.Elapsed += (s, e) =>
+            {
+                action?.SafeInvoke();
+            };
+            return timer;
+        }
+
         public static void WaitAction(Action action, float seconds)
         {
             if (seconds == 0f)
@@ -176,14 +185,14 @@ namespace Presence.Utils
                 action?.SafeInvoke();
                 return;
             }
-            Timer timer = new Timer(seconds * 1000);
-            timer.Elapsed += (o, e) =>
+            Timer timer = null;
+            timer = CreateTimer(() =>
             {
                 action?.SafeInvoke();
                 timer.Stop();
                 timer.Dispose();
                 timer = null;
-            };
+            }, seconds);
             timer.Start();
         }
 
