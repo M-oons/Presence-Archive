@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Presence.Enums;
 using Presence.Utils;
 
 namespace Presence
@@ -10,15 +11,15 @@ namespace Presence
     public static class AppInfo
     {
         public const string NAME = "Presence";
-        public const string VERSION = "1.2.1";
+        public const string VERSION = "1.2.2";
         public const string URL = "https://github.com/M-oons/Presence";
 
         public static async void CheckForUpdate(bool alertNoUpdate = false)
         {
-            AppUpdateResult result = await GetUpdateResult();
+            UpdateResult result = await GetUpdateResult();
             switch (result.Type)
             {
-                case AppUpdateResult.ResultType.Update:
+                case UpdateResultType.Update:
                     string url = result.DownloadURL;
                     if (!string.IsNullOrEmpty(url))
                     {
@@ -29,14 +30,14 @@ namespace Presence
                     }
                     break;
 
-                case AppUpdateResult.ResultType.NoUpdate:
+                case UpdateResultType.NoUpdate:
                     if (alertNoUpdate)
                     {
                         Util.Info("No Update Available", "You are already running the latest version of Presence.");
                     }
                     break;
 
-                case AppUpdateResult.ResultType.Error:
+                case UpdateResultType.Error:
                 default:
                     if (alertNoUpdate)
                     {
@@ -57,7 +58,7 @@ namespace Presence
             }
         }
 
-        private static async Task<AppUpdateResult> GetUpdateResult()
+        private static async Task<UpdateResult> GetUpdateResult()
         {
             HttpResponseMessage response = await API.Get("/repos/M-oons/Presence/releases/latest");
             if (response.IsSuccessStatusCode)
@@ -75,16 +76,16 @@ namespace Presence
                             && asset.TryGetValue("browser_download_url", out JToken urlToken))
                         {
                             string url = urlToken.ToString();
-                            return AppUpdateResult.Update(url);
+                            return UpdateResult.Update(url);
                         }
                     }
                     else // already running latest version
                     {
-                        return AppUpdateResult.NoUpdate();
+                        return UpdateResult.NoUpdate();
                     }
                 }
             }
-            return AppUpdateResult.Error();
+            return UpdateResult.Error();
         }
 
         private static int CompareVersion(string version)

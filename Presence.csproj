@@ -67,11 +67,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="App\API.cs" />
-    <Compile Include="App\AppUpdateResult.cs" />
+    <Compile Include="App\Enums\UpdateResultType.cs" />
+    <Compile Include="App\UpdateResult.cs" />
     <Compile Include="App\Activities\SavedActivity.cs" />
     <Compile Include="App\Config.cs" />
     <Compile Include="App\Discord.cs" />
-    <Compile Include="App\AppPage.cs" />
+    <Compile Include="App\Enums\AppPage.cs" />
     <Compile Include="App\Pages\ActivitiesPage.xaml.cs">
       <DependentUpon>ActivitiesPage.xaml</DependentUpon>
     </Compile>

@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using Presence.Activities;
+using Presence.Enums;
 using Presence.Pages;
 using Presence.Utils;
 

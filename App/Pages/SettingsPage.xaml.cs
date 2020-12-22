@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using Presence.Enums;
 using Presence.Utils;
 
 namespace Presence.Pages
@@ -42,6 +43,7 @@ namespace Presence.Pages
                 Config.Current.AutoStartPresence = AutoStartPresence.IsChecked ?? false;
                 Config.Current.Save();
             }
+
             bool startup = Util.IsOnStartup();
             if (RunOnStartup.IsChecked ?? false)
             {

@@ -1,4 +1,4 @@
-﻿namespace Presence
+﻿namespace Presence.Enums
 {
     public enum AppPage
     {

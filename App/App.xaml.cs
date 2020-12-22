@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Forms;
+using Presence.Enums;
 using Presence.Pages;
 using Presence.Utils;
 
